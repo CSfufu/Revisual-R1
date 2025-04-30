@@ -4,8 +4,8 @@ data:
   prompt_key: problem
   answer_key: answer
   image_key: images
-  max_prompt_length: 2048
-  max_response_length: 2048
+  max_prompt_length: 4096
+  max_response_length: 4096
   rollout_batch_size: 512
   val_batch_size: 1024
   format_prompt: ./examples/format_prompt/math_format.jinja
@@ -37,7 +37,7 @@ worker:
       trust_remote_code: false
       freeze_vision_tower: false
     optim:
-      lr: 1.0e-6
+      lr: 2.0e-6
       weight_decay: 1.0e-2
       strategy: adamw  # {adamw, adamw_bf16}
       lr_warmup_ratio: 0.0
@@ -50,16 +50,16 @@ worker:
       offload_optimizer: true  # true: more CPU memory; false: more GPU memory
 
   rollout:
-    n: 5
+    n: 10
     temperature: 1.0
-    top_p: 0.99
+    top_p: 0.95
     gpu_memory_utilization: 0.6
     enforce_eager: false
     enable_chunked_prefill: false
     tensor_parallel_size: 2
     limit_images: 0
     val_override_config:
-      temperature: 0.5
+      temperature: 0.8
       n: 1
 
   ref:
@@ -87,6 +87,6 @@ trainer:
   val_only: false
   val_generations_to_log: 3
   save_freq: 5  # -1 to disable
-  save_limit: 3  # -1 to disable
+  save_limit: 10  # -1 to disable
   save_checkpoint_path: null
   load_checkpoint_path: null
