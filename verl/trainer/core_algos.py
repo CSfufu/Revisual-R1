@@ -296,6 +296,8 @@ def compute_policy_loss(
     clip_ratio_low: float,
     clip_ratio_high: float,
     clip_ratio_dual: float,
+    preclip_min: float = 1e-3,
+    preclip_max: float = 1e3,
 ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
     """Compute the policy loss.
 
@@ -331,10 +333,20 @@ def compute_policy_loss(
     negative_approx_kl = log_probs - old_log_probs
     # clamp the ratio before exp to avoid nan
     # see: https://github.com/pytorch/pytorch/issues/10729
-    ratio = torch.exp(negative_approx_kl)
-    clipped_ratio = torch.exp(
-        torch.clamp(negative_approx_kl, np.log(1.0 - clip_ratio_low), np.log(1.0 + clip_ratio_high))
+
+    negative_approx_kl = torch.clamp(
+        negative_approx_kl,
+        min=float(np.log(preclip_min)),
+        max=float(np.log(preclip_max)),
     )
+    ratio = torch.exp(negative_approx_kl)
+
+    clipped_log_ratio = torch.clamp(
+        negative_approx_kl,
+        np.log(1.0 - clip_ratio_low), 
+        np.log(1.0 + clip_ratio_high)
+    )
+    clipped_ratio = torch.exp(clipped_log_ratio)
 
     pg_loss = -advantages * ratio
     pg_loss2 = -advantages * clipped_ratio

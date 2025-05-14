@@ -52,6 +52,8 @@ class DataParallelPPOActor(BasePPOActor):
         self.rank = int(os.getenv("RANK", "0"))
         self.actor_module = actor_module
         self.actor_optimizer = actor_optimizer
+        self.entropy_coef = 0.0                     # start with no constraint
+        self._update_step  = 0
         if config.use_torch_compile:
             self.log_probs_from_logits = torch.compile(VF.log_probs_from_logits, dynamic=True)
         else:
@@ -147,6 +149,31 @@ class DataParallelPPOActor(BasePPOActor):
             log_probs = self.log_probs_from_logits(logits, responses)  # (bsz, response_length)
 
         return log_probs
+
+    def _anneal_entropy_coef(self):
+        # still inside the actor class
+        if self._update_step < self.config.entropy_warmup_steps:
+            # keep β = 0 during warm-up
+            self.entropy_coef = 0.0
+        elif self._update_step == self.config.entropy_warmup_steps:
+            # first step *after* warm-up: set to initial value
+            self.entropy_coef = self.config.entropy_coef_init
+        else:
+            # normal decay afterwards
+            if self.config.entropy_schedule == "linear":
+                decay = (self.config.entropy_coef_init - self.config.entropy_coef_min) \
+                        / max(1, self.config.total_updates)
+                self.entropy_coef = max(
+                    self.config.entropy_coef_min,
+                    self.entropy_coef - decay
+                )
+            else:  # exponential
+                self.entropy_coef = max(
+                    self.config.entropy_coef_min,
+                    self.entropy_coef * self.config.entropy_decay
+                )
+        self._update_step += 1
+
 
     def _optimizer_step(self) -> torch.Tensor:
         if isinstance(self.actor_module, FSDP):
@@ -256,6 +283,8 @@ class DataParallelPPOActor(BasePPOActor):
                         clip_ratio_low=self.config.clip_ratio_low,
                         clip_ratio_high=self.config.clip_ratio_high,
                         clip_ratio_dual=self.config.clip_ratio_dual,
+                        preclip_min = 1e-3,      # 可选：cfg.preclip_min
+                        preclip_max = 1e3,       # 可选：cfg.preclip_max
                     )
                     if "ref_log_probs" in model_inputs:
                         ref_log_probs = model_inputs["ref_log_probs"]
@@ -270,7 +299,7 @@ class DataParallelPPOActor(BasePPOActor):
                         metrics["actor/kl_loss"] = kl_loss.detach().item()
                         metrics["actor/kl_coef"] = self.config.kl_coef
 
-                    loss = pg_loss / gradient_accumulation
+                    loss = (pg_loss - self.entropy_coef * entropy_loss) / gradient_accumulation
                     loss.backward()
 
                     batch_metrics = {
@@ -283,6 +312,7 @@ class DataParallelPPOActor(BasePPOActor):
                     append_to_dict(metrics, batch_metrics)
 
                 grad_norm = self._optimizer_step()
-                append_to_dict(metrics, {"actor/grad_norm": grad_norm.detach().item()})
+                self._anneal_entropy_coef()
+                append_to_dict(metrics, {"actor/grad_norm": grad_norm.detach().item(), "actor/entropy_coef": self.entropy_coef})
 
         return metrics

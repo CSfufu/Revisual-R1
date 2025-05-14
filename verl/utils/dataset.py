@@ -17,7 +17,7 @@ import os
 from collections import defaultdict
 from io import BytesIO
 from typing import Any, Dict, List, Optional, Union
-
+import pathlib
 import numpy as np
 import torch
 from datasets import load_dataset
@@ -55,7 +55,10 @@ class ImageProcessMixin:
     min_pixels: int
 
     def process_image(self, image: Union[Dict[str, Any], ImageObject]) -> ImageObject:
-        if isinstance(image, dict):
+        file_path = "/cpfs/data/chenshuang/mm-rl/"
+        if isinstance(image, (str, pathlib.Path)):
+            image = Image.open(file_path + image)
+        elif isinstance(image, dict):
             image = Image.open(BytesIO(image["bytes"]))
         elif isinstance(image, bytes):
             image = Image.open(BytesIO(image))

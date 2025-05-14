@@ -80,8 +80,14 @@ class ActorConfig:
     micro_batch_size_per_device_for_experience: int = 16
     max_grad_norm: float = 1.0
     clip_ratio_low: float = 0.2
-    clip_ratio_high: float = 0.3
+    clip_ratio_high: float = 0.25
     clip_ratio_dual: float = 3.0
+    entropy_coef_init: float = 0.02       # β₀
+    entropy_coef_min:  float = 0.0        # 下限
+    entropy_decay:     float = 0.985      # λ  (指数衰减)
+    entropy_schedule:  str   = "exp"      # "exp" | "linear"
+    total_updates:     int   = 200000    # 仅线性衰减用
+    entropy_warmup_steps: int = 20
     ppo_epochs: int = 1
     padding_free: bool = False
     ulysses_sequence_parallel_size: int = 1

@@ -35,7 +35,7 @@ class RolloutConfig:
     enable_chunked_prefill: bool = False  # only for v0 engine
     tensor_parallel_size: int = 2
     max_model_len: Optional[int] = None
-    max_num_batched_tokens: int = 8192
+    max_num_batched_tokens: int = 16385 
     disable_log_stats: bool = True
     val_override_config: Dict[str, Any] = field(default_factory=dict)
     """auto keys"""

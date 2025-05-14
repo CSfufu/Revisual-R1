@@ -30,7 +30,12 @@ from .config import RewardConfig
 class RewardScore(TypedDict):
     overall: float
     format: Optional[float]
+    self_critic: Optional[float]
+    revisual_image: Optional[float]
+    repetition_score: Optional[float]
+    length_score: Optional[float]
     accuracy: Optional[float]
+
 
 
 SequentialRewardFunction = Callable[[str, str], RewardScore]
@@ -107,8 +112,9 @@ class BatchFunctionRewardManager(FunctionRewardManager):
                 self.tokenizer.decode(valid_response_ids, skip_special_tokens=self.config.skip_special_tokens)
             )
             ground_truth.append(data.non_tensor_batch["ground_truth"][i])
-
-        scores = self.reward_fn(response_str, ground_truth)
+        use_efficient = self.config.use_efficient_reward
+        target_max_length = self.config.target_max_length
+        scores = self.reward_fn(response_str, ground_truth, response_length.tolist(), use_efficient, target_max_length)
         reward_tensor = torch.zeros_like(data.batch["responses"], dtype=torch.float32)
         reward_metrics = defaultdict(list)
         for i, score in enumerate(scores):

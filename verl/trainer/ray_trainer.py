@@ -573,22 +573,111 @@ class RayPPOTrainer:
                             gamma=self.config.algorithm.gamma,
                             lam=self.config.algorithm.lam,
                         )
+                    
+                    training_batch = batch # Default to original batch
+                    if self.config.algorithm.use_pad and batch.batch is not None and "advantages" in batch.batch.keys():
+                        with timer("pad_selection", timing_raw):
+                            advantages_tensor = batch.batch.get("advantages")
+                            response_mask_tensor = batch.batch.get("response_mask") # Assuming this key exists
 
-                    # update critic
-                    if self.use_critic:
-                        with timer("update_critic", timing_raw):
-                            critic_output = self.critic_wg.update_critic(batch)
+                            if advantages_tensor is None or response_mask_tensor is None:
+                                print("Warning: pad enabled but 'advantages' or 'response_mask' missing in batch. Skipping pad.")
+                                training_batch = batch
+                            else:
+                                # Aggregate advantages per sequence (e.g., sum over response part)
+                                masked_advantages = advantages_tensor * response_mask_tensor
+                                response_lengths = response_mask_tensor.sum(dim=-1).float() + 1e-8 # Avoid division by zero
+                                if self.config.algorithm.pad_normalize_by_length:
+                                    sequence_advantages = torch.sum(masked_advantages, dim=-1) / response_lengths
+                                else:
+                                    sequence_advantages = torch.sum(masked_advantages, dim=-1)
 
-                        critic_metrics = reduce_metrics(critic_output.non_tensor_batch)
-                        metrics.update(critic_metrics)
 
-                    # update actor
-                    if self.config.trainer.critic_warmup <= self.global_step:
-                        with timer("update_actor", timing_raw):
-                            actor_output = self.actor_rollout_wg.update_actor(batch)
+                                sequence_advantages = torch.abs(sequence_advantages)
+                                # 1. Rule out zero/low advantage samples
+                                effective_mask = (sequence_advantages > self.config.algorithm.pad_advantage_threshold_low) & \
+                                    ( sequence_advantages < self.config.algorithm.pad_advantage_threshold_high)
+                                effective_indices = torch.where(effective_mask)[0]
 
-                        actor_metrics = reduce_metrics(actor_output.non_tensor_batch)
-                        metrics.update(actor_metrics)
+                                if len(effective_indices) > 0:
+                                    advantages_for_sampling = sequence_advantages[effective_indices]
+
+                                    # 2. Normalize advantages
+                                    # p = (advantages^alpha) / sum(advantages^alpha)
+                                    # Add small epsilon for stability.
+                                    powered_advantages = torch.pow(advantages_for_sampling.float() + 1e-8, self.config.algorithm.pad_alpha)
+                                    probabilities = powered_advantages / torch.sum(powered_advantages)
+
+                                    # 3. Determine sample size
+                                    num_original_samples = len(batch) # Relies on DataProto.__len__
+                                    num_to_sample = int(num_original_samples * self.config.algorithm.pad_sample_size_ratio)
+                                    num_to_sample = min(num_to_sample, len(effective_indices)) if not self.config.algorithm.pad_with_replacement else num_to_sample
+                                    num_to_sample = max(0, num_to_sample) # Ensure non-negative
+
+                                    if num_to_sample > 0 and len(probabilities) > 0:
+                                        # 4. Select samples
+                                        selected_relative_indices = torch.multinomial(
+                                            probabilities,
+                                            num_samples=num_to_sample,
+                                            replacement=self.config.algorithm.pad_with_replacement
+                                        )
+                                        final_selected_batch_indices = effective_indices[selected_relative_indices]
+
+                                        # Create the new 'training_batch' DataProto from selected indices
+                                        # TensorDict supports advanced indexing with a tensor of indices
+                                        selected_batch_tensordict = batch.batch[final_selected_batch_indices]
+
+                                        # For non_tensor_batch, convert indices to NumPy and select
+                                        indices_np = final_selected_batch_indices.cpu().numpy()
+                                        selected_non_tensor_data = {}
+                                        if batch.non_tensor_batch: # Check if it's not empty
+                                            for k, v_np in batch.non_tensor_batch.items():
+                                                selected_non_tensor_data[k] = v_np[indices_np]
+
+                                        training_batch = DataProto(
+                                            batch=selected_batch_tensordict,
+                                            non_tensor_batch=selected_non_tensor_data,
+                                            meta_info=deepcopy(batch.meta_info) # Deepcopy meta_info
+                                        )
+
+                                        # Log pad specific metrics
+                                        metrics["pad/num_effective_samples"] = len(effective_indices)
+                                        metrics["pad/num_selected_samples"] = len(final_selected_batch_indices)
+                                        if len(final_selected_batch_indices) > 0 : # Check to avoid error on empty tensor
+                                            metrics["pad/avg_selected_advantage"] = sequence_advantages[final_selected_batch_indices].mean().item()
+                                        metrics["pad/avg_original_advantage"] = sequence_advantages.mean().item()
+                                    else:
+                                        metrics["pad/num_effective_samples"] = len(effective_indices)
+                                        metrics["pad/num_selected_samples"] = 0
+                                        # Fallback to original batch or an empty batch if no samples are to be selected
+                                        if num_to_sample == 0:
+                                            print("Warning: pad resulted in 0 samples to select. Using original batch or check config.")
+                                        training_batch = batch
+                                else:
+                                    metrics["pad/num_effective_samples"] = 0
+                                    metrics["pad/num_selected_samples"] = 0
+                                    training_batch = batch # Fallback to original batch
+
+                    # Check if training_batch has any samples before proceeding
+                    if len(training_batch) == 0 and self.config.algorithm.use_pad:
+                        print(f"Step {self.global_step}: pad resulted in an empty batch. Skipping updates for this step.")
+                        exit(1)
+                    else:
+                        # update critic - USE training_batch
+                        if self.use_critic:
+                            with timer("update_critic", timing_raw):
+                                critic_output = self.critic_wg.update_critic(training_batch) 
+
+                            critic_metrics = reduce_metrics(critic_output.non_tensor_batch)
+                            metrics.update(critic_metrics)
+
+
+                        if self.config.trainer.critic_warmup <= self.global_step:
+                            with timer("update_actor", timing_raw):
+                                actor_output = self.actor_rollout_wg.update_actor(training_batch) 
+
+                            actor_metrics = reduce_metrics(actor_output.non_tensor_batch)
+                            metrics.update(actor_metrics)
 
                     # validate
                     if (

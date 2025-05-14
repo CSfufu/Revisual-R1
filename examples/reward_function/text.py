@@ -1,5 +1,5 @@
 # Copyright 2024 Bytedance Ltd. and/or its affiliates
-#
+# Copyright 2022 EleutherAI and the HuggingFace Inc. team. All rights reserved.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# Adapted from https://github.com/EleutherAI/lm-evaluation-harness/blob/main/lm_eval/tasks/hendrycks_math/utils.py
 
 import re
 from typing import Dict, List
 from collections import Counter
-import numpy as np
 
 from mathruler.grader import extract_boxed_content, grade_answer
 
@@ -482,8 +482,8 @@ def repetition_penalty_reward(predict_str: str) -> float:
 def length_reward_l1_max(
     n_y: int,
     n_gold: int,
-    alpha: float = 0.005,
-    delta: float = 0.5,
+    alpha: float = 0.001,
+    delta: float = 0.95,
 ) -> float:
     """
     L1-Max length reward.
@@ -493,73 +493,23 @@ def length_reward_l1_max(
     raw = alpha * (n_gold - n_y) + delta
     return max(0.0, min(1.0, raw))  # clip 到 [0,1]
 
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
-
-def normalized_length_reward(
-    n_y: int,
-    mean_length: float,
-    std_length: float,
-) -> float:
-    """
-    使用标准化和sigmoid软裁剪实现的长度正则化奖励。
-    
-    参数:
-        n_y: 当前响应的token数量
-        mean_length: 参考分布的平均响应长度
-        std_length: 参考分布的标准差
-        alpha: 正则化强度参数，α ∈ [0, 1]
-            - α = 0: 不应用长度正则化
-            - α > 0: 增加对更短但正确响应的偏好
-    
-    返回:
-        float: 长度正则化系数，范围[0,1]
-    """
-
-    normalized_len = (n_y - mean_length) / std_length
-    length_reward = sigmoid(-normalized_len)
-    return length_reward
-    
 
 
-
-def compute_score(predicts: List[str], ground_truths: List[str],response_lengths: List[int] , use_efficient: bool, n_gold: int, format_weight: float = 0.05) -> List[Dict[str, float]]:
+def compute_score(predicts: List[str], ground_truths: List[str], use_efficient: bool, n_gold: int, format_weight: float = 0.05) -> List[Dict[str, float]]:
     scores = []
-
-    mean_length = np.mean(response_lengths)
-    std_length = np.std(response_lengths)
-
-    for predict, ground_truth, response_length in zip(predicts, ground_truths, response_lengths):
-        predict = re.sub(r"\s*(<|>|/)\s*", r"\1", predict)  # handle qwen2.5vl-32b format
-        format_score = format_reward(predict)
-        accuracy_score = accuracy_reward(predict, ground_truth)
+    for predict, ground_truth in zip(predicts, ground_truths):
+        reward = accuracy_reward(predict, ground_truth)
+        penalty_reward = repetition_penalty_reward(predict)
         self_critic_score = self_critic_reward(predict)
-        image_revist_score = image_revisit_reward(predict)
-        repetition_penalty_score = repetition_penalty_reward(predict)
-        if use_efficient:
-            efficient_length_score = normalized_length_reward(response_length, mean_length, std_length)
-            efficient_l1_score = length_reward_l1_max(response_length, n_gold)
-            scores.append(
-                {
-                    "overall": (1 - format_weight - format_weight - format_weight * 2) * accuracy_score + format_weight * self_critic_score + format_weight * image_revist_score + format_weight * repetition_penalty_score + format_weight * efficient_l1_score,
-                    "format": format_score,
-                    "self_critic": self_critic_score,
-                    "revisual_image": image_revist_score,
-                    "repetition_score": repetition_penalty_score,
-                    "length_score": efficient_l1_score,
-                    "accuracy": accuracy_score,
-                }
-            )
-        else:
-            scores.append(
-                {
-                    "overall": (1 - format_weight - format_weight - format_weight * 2) * accuracy_score + format_weight * self_critic_score + format_weight * image_revist_score + format_weight * repetition_penalty_score,
-                    "format": format_score,
-                    "self_critic": self_critic_score,
-                    "revisual_image": image_revist_score,
-                    "repetition_score": repetition_penalty_score,
-                    "accuracy": accuracy_score,
-                }
-            )
+        format_score = format_reward(predict)
+        scores.append(
+            {
+                "overall": reward * (1 - format_weight * 3) + penalty_reward * format_weight * 2 + self_critic_score * format_weight,
+                "format": format_score,
+                "self_critic": self_critic_score,
+                "repetition_score": penalty_reward,
+                "accuracy": reward,
+            }
+        )
 
     return scores

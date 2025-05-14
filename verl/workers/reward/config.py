@@ -26,6 +26,8 @@ class RewardConfig:
     reward_function: Optional[str] = None
     reward_function_kwargs: dict = field(default_factory=dict)
     skip_special_tokens: bool = True
+    use_efficient_reward: bool = False
+    target_max_length: int = 4096
     num_cpus: int = 1
     """auto keys"""
     reward_function_name: Optional[str] = field(default=None, init=False)

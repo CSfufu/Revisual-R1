@@ -70,6 +70,13 @@ class AlgorithmConfig:
     kl_type: str = "fixed"
     kl_horizon: float = 0.0
     kl_target: float = 0.0
+    use_pad: bool = False
+    pad_alpha: float = 1.0
+    pad_advantage_threshold_low: float = 0.05
+    pad_advantage_threshold_high: float = 0.95
+    pad_sample_size_ratio: float = 1.0
+    pad_with_replacement: bool = True
+    pad_normalize_by_length: bool = True
 
 
 @dataclass
