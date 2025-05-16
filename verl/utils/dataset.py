@@ -55,7 +55,7 @@ class ImageProcessMixin:
     min_pixels: int
 
     def process_image(self, image: Union[Dict[str, Any], ImageObject]) -> ImageObject:
-        file_path = "/cpfs/data/chenshuang/mm-rl/"
+        file_path = "file_path"
         if isinstance(image, (str, pathlib.Path)):
             image = Image.open(file_path + image)
         elif isinstance(image, dict):
