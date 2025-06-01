@@ -1,6 +1,6 @@
-<div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-  <img src="./figures/logo.png" alt="Revisual Icon" width="50">
-  <span style="font-size: 1.8em; font-weight: bold;">
+<div align="center">
+  <h1 style="margin: 0; font-size: 1.8em;">
+    <img src="./figures/logo.png" alt="Revisual Icon" width="50" style="vertical-align: middle; margin-right: 10px;">
     Advancing Multimodal Reasoning: From Optimized Cold Start to Staged Reinforcement Learning
-  </span>
+  </h1>
 </div>
