@@ -44,14 +44,18 @@ This work underscores that careful curriculum design and algorithmic enhancement
 
 **ReVisual-R1** presents strong performance in challenging visual-mathematical reasoning tasks, while simultaneously preserving strong general-purpose text skills. 
 
-## Reasoning Example
+## 🏝️ Reasoning Example
 
 ### Previous Reasoning Models
 
-
+Previous open-source multimodal reasoning model reasoning case.
+![case1](./figures/case1.svg)
 
 
 ### Revisual-R1
+
+Our **Revisual-R1** model reasoning case, showcasing its exceptional reasoning ability. The model generates long responses, continuously hypothesizing, reflecting, verifying, and correcting to arrive at the final answer, while also providing a summary answer.
+![case2](./figures/case2.svg)
 
 
 ## ✨ Getting Started
@@ -93,9 +97,9 @@ If you encounter issues with connecting to Hugging Face, consider using export H
 python3 scripts/model_merger.py --local_dir checkpoints/${ProjectName}$/exp_name/global_step_100/actor
 ```
 
-### 🔧 Evaluation
+## 🎁 Evaluation
 
-#### 🤖 Usage
+### 🤖 Usage
 
 ```plain
 usage: main.py [-h] --model-name MODEL_NAME --openai-api-key OPENAI_API_KEY [--openai-base-url OPENAI_BASE_URL] [--cache-dir CACHE_DIR] [--output-dir OUTPUT_DIR] [--max-tokens MAX_TOKENS] [--min-pixels MIN_PIXELS]
@@ -132,7 +136,7 @@ options:
                         Maximum number of retries for evaluation
 ```
 
-#### 🔓Examples
+### 🔓Examples
 
 **(1)** Evaluate a model directly via OpenAI API
 
@@ -157,4 +161,37 @@ python ./src/main.py --model-name="lmm_name" \
 	--cache-dir="./cache"
 ```
 
-### 🔧 Inference
+## 🖥️ Inference
+
+Run the command below.
+```bash
+MODEL_PATH="Reviusal-R1"
+MAX_TOKENS=16384
+DO_SAMPLE=True
+TEMPERATURE=1.0
+TOP_P=0.95
+TOP_K=50
+NUM_RETURN_SEQUENCES=1
+
+
+prompt = "You FIRST think about the reasoning process as an internal monologue and then provide the final answer. The reasoning process MUST BE enclosed within <think> </think> tags. The final answer MUST BE put in \\boxed{}."
+question="Which of the boxes comes next in the sequence? Select answers from A-E"
+
+
+python infer.py \
+ --model_path ${MODEL_PATH} \
+ --image_path ${IMAGE_PATH} \
+ --question ${question} \
+ --prompt ${prompt} \
+ --max_tokens ${MAX_TOKENS} \
+ --do_sample ${DO_SAMPLE} \
+ --temperature ${TEMPERATURE} \
+ --top_p ${TOP_P} \
+ --top_k ${TOP_K} \
+ --num_return_sequences ${NUM_RETURN_SEQUENCES} 
+```
+You can also modify the arguments in `inference/inference.sh`
+```shell
+bash inference/inference.sh
+```
+
