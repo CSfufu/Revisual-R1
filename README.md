@@ -5,8 +5,18 @@
   </h1>
 </div>
 
+
 ## 📚 Overview
 
+
+- [⚡ News](#-news)
+- [🚧 TODO](#-todo)
+- [📖 Introduction](#-introduction)
+- [🍭 Results](#-results)
+- [🏝️ Reasoning Example](#-reasoning-example)
+- [✨ Getting Started](#-getting-started)
+- [🎁 Evaluation](#-evaluation)
+- [🖥️ Inference](#-inference)
 
 
 ## ⚡ News
