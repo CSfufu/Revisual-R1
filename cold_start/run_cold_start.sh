@@ -1,0 +1,1 @@
+llamafactory-cli train cold_start/examples/train_full/revisual_cold_start.yaml
