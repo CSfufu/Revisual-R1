@@ -97,7 +97,7 @@ bash ./cold_start/run_cold_start.sh
 
 #### Staged Reinforcement Optimization 
 ```bash
-bash ./examples/format_reward.sh
+bash ./examples/main.sh
 ```
 If you encounter issues with connecting to Hugging Face, consider using export HF_ENDPOINT=https://hf-mirror.com.
 
