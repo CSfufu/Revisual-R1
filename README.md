@@ -44,3 +44,117 @@ This work underscores that careful curriculum design and algorithmic enhancement
 
 **ReVisual-R1** presents strong performance in challenging visual-mathematical reasoning tasks, while simultaneously preserving strong general-purpose text skills. 
 
+## Reasoning Example
+
+### Previous Reasoning Models
+
+
+
+
+### Revisual-R1
+
+
+## ✨ Getting Started
+
+### 🔧 Installing
+
+You can install Revisual-R1 dependencies by running the following commands:
+```bash
+conda create -n revisual python=3.11 -y && conda activate revisual
+
+cd Revisual-R1
+pip3 install -e .
+```
+
+
+If you encounter issues when installing flash-attn, we recommend you to install it here 
+[flash-attn](https://github.com/Dao-AILab/flash-attention/releases/tag/v2.7.3). For example, we use this version. 
+```bash
+$ wget https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.3/flash_attn-2.7.3+cu12torch2.4cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
+$ pip install flash_attn-2.7.3+cu12torch2.4cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
+```
+
+### 🔧 Training
+
+#### Cold Start Training 
+```bash
+bash ./cold_start/run_cold_start.sh
+```
+
+#### Staged Reinforcement Optimization 
+```bash
+bash ./examples/format_reward.sh
+```
+If you encounter issues with connecting to Hugging Face, consider using export HF_ENDPOINT=https://hf-mirror.com.
+
+
+### 🔧 Merge Checkpoint in Hugging Face Format
+```bash
+python3 scripts/model_merger.py --local_dir checkpoints/${ProjectName}$/exp_name/global_step_100/actor
+```
+
+### 🔧 Evaluation
+
+#### 🤖 Usage
+
+```plain
+usage: main.py [-h] --model-name MODEL_NAME --openai-api-key OPENAI_API_KEY [--openai-base-url OPENAI_BASE_URL] [--cache-dir CACHE_DIR] [--output-dir OUTPUT_DIR] [--max-tokens MAX_TOKENS] [--min-pixels MIN_PIXELS]
+               [--max-pixels MAX_PIXELS] [--temperature TEMPERATURE] [--top-p TOP_P] [--system-prompt SYSTEM_PROMPT] [--datasets DATASETS] [--dataset-dir DATASET_DIR] [--eval-threads EVAL_THREADS] [--max-retries MAX_RETRIES]
+
+Unified evaluation for multimodal math datasets
+
+options:
+  -h, --help            show this help message and exit
+  --model-name MODEL_NAME
+                        The name of the model to use
+  --openai-api-key OPENAI_API_KEY
+                        The API key for the OpenAI API
+  --openai-base-url OPENAI_BASE_URL
+                        The base URL for the OpenAI API
+  --cache-dir CACHE_DIR
+                        Directory to cache predictions
+  --output-dir OUTPUT_DIR
+                        Directory to save results
+  --max-tokens MAX_TOKENS
+                        Maximum number of tokens to generate
+  --min-pixels MIN_PIXELS
+  --max-pixels MAX_PIXELS
+  --temperature TEMPERATURE
+                        Sampling temperature
+  --top-p TOP_P         Top-p sampling
+  --system-prompt SYSTEM_PROMPT
+                        System prompt for the model
+  --datasets DATASETS   Comma-separated list of datasets to evaluate: geo3k,wemath,mathvista,mathverse,mathvision or 'all'
+  --dataset-dir DATASET_DIR
+  --eval-threads EVAL_THREADS
+                        Number of threads for evaluation
+  --max-retries MAX_RETRIES
+                        Maximum number of retries for evaluation
+```
+
+#### 🔓Examples
+
+**(1)** Evaluate a model directly via OpenAI API
+
+```shell
+python ./src/main.py --model-name="gpt-4.1" \
+	--openai-api-key="YOUR_API_KEY" \
+	--cache-dir="./cache"
+```
+
+**(2)** Deploy and evaluate a local model using [lmdeploy](https://github.com/InternLM/lmdeploy)
+
+```shell
+lmdeploy serve api_server \
+	/path/to/local/lmm \
+	--model-name lmm_name \
+	--server-port 23333 \
+	--chat-template qwen2d5-vl
+
+python ./src/main.py --model-name="lmm_name" \
+	--openai-base-url="http://localhost:23333/v1" \
+	--openai-api-key="YOUR_API_KEY" \
+	--cache-dir="./cache"
+```
+
+### 🔧 Inference
