@@ -58,7 +58,7 @@ This work underscores that careful curriculum design and algorithmic enhancement
 
 
 Our **Revisual-R1** model reasoning case, showcasing its exceptional reasoning ability. The model generates long responses, continuously hypothesizing, reflecting, verifying, and correcting to arrive at the final answer, while also providing a summary answer.
-![case2](./figures/case1.svg)
+![case2](./figures/case_revisual.svg)
 
 
 ## ✨ Getting Started
