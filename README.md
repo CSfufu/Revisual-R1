@@ -56,16 +56,9 @@ This work underscores that careful curriculum design and algorithmic enhancement
 
 ## 🏝️ Reasoning Example
 
-### Previous Reasoning Models
-
-Previous open-source multimodal reasoning model reasoning case.
-![case1](./figures/case1.svg)
-
-
-### Revisual-R1
 
 Our **Revisual-R1** model reasoning case, showcasing its exceptional reasoning ability. The model generates long responses, continuously hypothesizing, reflecting, verifying, and correcting to arrive at the final answer, while also providing a summary answer.
-![case2](./figures/case2.svg)
+![case2](./figures/case1.svg)
 
 
 ## ✨ Getting Started
