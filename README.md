@@ -23,13 +23,6 @@
 
 - [2025/06/03] 🔥 Revisual-R1 paper available on arxiv.
 
-## 🚧 TODO
-
-We are preparing to complete these tasks over the next few weeks, please stay tuned!
-
-- 🚧 We are going to release the training datasets(Coldstart, MRL, TRL).
-- 🚧 We are going to release the checkpoint.
-- 🚧 We are in the process of training for 32B & 3B Revisual-R1 and will release them when we finish.
 
 ## 📖 Introduction
 
@@ -53,12 +46,6 @@ This work underscores that careful curriculum design and algorithmic enhancement
 <img src="./figures/results.png" alt="Revisual results" >
 
 **ReVisual-R1** presents strong performance in challenging visual-mathematical reasoning tasks, while simultaneously preserving strong general-purpose text skills. 
-
-## 🏝️ Reasoning Example
-
-
-Our **Revisual-R1** model reasoning case, showcasing its exceptional reasoning ability. The model generates long responses, continuously hypothesizing, reflecting, verifying, and correcting to arrive at the final answer, while also providing a summary answer.
-![case2](./figures/case_revisual.svg)
 
 
 ## ✨ Getting Started
@@ -197,4 +184,23 @@ You can also modify the arguments in `inference/inference.sh`
 ```shell
 bash inference/inference.sh
 ```
+
+
+## 🏝️ Reasoning Example
+
+
+Our **Revisual-R1** model reasoning case, showcasing its exceptional reasoning ability. The model generates long responses, continuously hypothesizing, reflecting, verifying, and correcting to arrive at the final answer, while also providing a summary answer.
+![case2](./figures/case_revisual.svg)
+
+
+
+## 🚧 TODO
+
+We are preparing to complete these tasks over the next few weeks, please stay tuned!
+
+- 🚧 We are going to release the training datasets(Coldstart, MRL, TRL).
+- 🚧 We are going to release the checkpoint.
+- 🚧 We are in the process of training for 32B & 3B Revisual-R1 and will release them when we finish.
+
+
 
