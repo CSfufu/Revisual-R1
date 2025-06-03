@@ -21,7 +21,7 @@
 
 ## ⚡ News
 
-- [2025/06/03] 🔥 Revisual-R1 paper available on arxiv.
+- [2025/06/04] 🔥 Revisual-R1 paper available on arxiv.
 
 
 ## 📖 Introduction
