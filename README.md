@@ -21,7 +21,7 @@
 
 ## ⚡ News
 
-- [2025/06/04] 🔥 Revisual-R1 paper available on arxiv.
+- [2025/06/04] 🔥 Revisual-R1 paper available on [here](paper/Advancing_Multimodal_Reasoning__From_Optimized_Cold_Start_to_Staged_Reinforcement_Learning.pdf) and will be soon online in arxiv.
 
 
 ## 📖 Introduction
