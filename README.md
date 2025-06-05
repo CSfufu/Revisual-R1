@@ -17,11 +17,12 @@
 - [✨ Getting Started](#-getting-started)
 - [🎁 Evaluation](#-evaluation)
 - [🖥️ Inference](#-inference)
+- [📄 Citation](#-Citation)
 
 
 ## ⚡ News
 
-- [2025/06/04] 🔥 Revisual-R1 paper available on [arxiv](https://arxiv.org/abs/2506.04207).
+- [2025/06/05] 🔥 Revisual-R1 paper available on [arxiv](https://arxiv.org/abs/2506.04207).
 
 
 ## 📖 Introduction
@@ -203,7 +204,7 @@ We are preparing to complete these tasks over the next few weeks, please stay tu
 - 🚧 We are in the process of training for 32B & 3B Revisual-R1 and will release them when we finish.
 
 
-## Citation
+## 📄Citation
 
 If you find our works useful for your research, please consider citing:
 ```
