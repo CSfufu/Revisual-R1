@@ -1,8 +1,15 @@
 <div align="center">
+
+
+
   <h1 style="margin: 0; font-size: 1.8em;">
     <img src="./figures/logo.png" alt="Revisual Icon" width="50" style="vertical-align: middle; margin-right: 10px;">
     Advancing Multimodal Reasoning: From Optimized Cold Start to Staged Reinforcement Learning
   </h1>
+
+  [![Paper](https://img.shields.io/badge/paper-A42C25?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2506.04207)
+  [![Github](https://img.shields.io/badge/Revisual_R1-000000?style=for-the-badge&logo=github&logoColor=000&logoColor=white)](https://github.com/CSfufu/Revisual-R1)
+
 </div>
 
 
