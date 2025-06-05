@@ -10,6 +10,10 @@
   [![Paper](https://img.shields.io/badge/paper-A42C25?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2506.04207)
   [![Github](https://img.shields.io/badge/Revisual_R1-000000?style=for-the-badge&logo=github&logoColor=000&logoColor=white)](https://github.com/CSfufu/Revisual-R1)
 
+  [![Awesome](https://awesome.re/badge.svg)](https://github.com/CSfufu/Revisual-R1)  
+  [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+  ![](https://img.shields.io/github/last-commit/CSfufu/Revisual-R1?color=green) 
+
 </div>
 
 
@@ -211,7 +215,9 @@ We are preparing to complete these tasks over the next few weeks, please stay tu
 
 - 🚧 We are going to release the training datasets(Coldstart, MRL, TRL).
 - 🚧 We are going to release the checkpoint.
-- 🚧 We are in the process of training for 32B & 3B Revisual-R1 and will release them when we finish.
+- 🚧 We are in the process of training for 32B & 3B Revisual-R1 and will release them when we finish.\
+
+## 📮 Contact
 
 
 ## 📄Citation
@@ -228,3 +234,7 @@ If you find our works useful for your research, please consider citing:
       url={https://arxiv.org/abs/2506.04207}, 
 }
 ```
+
+## ⭐️ Star HistoryMore actions
+
+[![Star History Chart](https://api.star-history.com/svg?repos=CSfufu/Revisual-R1&type=Date)](https://star-history.com/#CSfufu/Revisual-R1&Date)
