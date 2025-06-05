@@ -9,6 +9,7 @@
 
   [![Paper](https://img.shields.io/badge/paper-A42C25?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2506.04207)
   [![Github](https://img.shields.io/badge/Revisual_R1-000000?style=for-the-badge&logo=github&logoColor=000&logoColor=white)](https://github.com/CSfufu/Revisual-R1)
+  [![Hugging Face Collection](https://img.shields.io/badge/Revisual_R1_Collection-fcd022?style=for-the-badge&logo=huggingface&logoColor=000)](https://huggingface.co/collections/csfufu/revisual-r1-6841b748f08ee6780720c00e)
 
   [![Awesome](https://awesome.re/badge.svg)](https://github.com/CSfufu/Revisual-R1)
   [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
@@ -17,25 +18,29 @@
 </div>
 
 
-
-
 ## 📚 Overview
 
 - [📚 Overview](#-overview)
 - [⚡ News](#-news)
 - [📖 Introduction](#-introduction)
 - [🍭 Results](#-results)
+- [🎯 Models](#-models)
 - [✨ Getting Started](#-getting-started)
 - [🎁 Evaluation](#-evaluation)
 - [🖥️ Inference](#️-inference)
 - [🏝️ Reasoning Example](#-reasoning-example)
+- [🚧 TODO](#-todo)
+- [📮 Contact](#-contact)
 - [📄Citation](#citation)
+
 
 
 
 
 ## ⚡ News
 
+- [2025/06/06] 🔥 Revisual-R1 model (Coldstart & final) are opensource on [huggingface](https://huggingface.co/collections/csfufu/revisual-r1-6841b748f08ee6780720c00e).
+- [2025/06/05] 🎉 Ranked #2 of the day on [Huggingface Daily Papers](https://huggingface.co/papers/2506.04207).
 - [2025/06/05] 🔥 Revisual-R1 paper available on [arxiv](https://arxiv.org/abs/2506.04207).
 
 
@@ -61,6 +66,14 @@ This work underscores that careful curriculum design and algorithmic enhancement
 <img src="./figures/results.png" alt="Revisual results" >
 
 **ReVisual-R1** presents strong performance in challenging visual-mathematical reasoning tasks, while simultaneously preserving strong general-purpose text skills. 
+
+
+## 🎯 Models
+
+| **Model**                          | **Huggingface** |  **Base Model** |
+|-----------------------------------|------------------|------------------|
+| Revisual-R1-Coldstart | https://huggingface.co/csfufu/Revisual-R1-Coldstart |  Qwen2.5-VL-7B-Instruct |
+| Revisual-R1-final | https://huggingface.co/csfufu/Revisual-R1-final | Qwen2.5-VL-7B-Instruct |
 
 
 ## ✨ Getting Started
