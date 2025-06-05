@@ -6,18 +6,21 @@
 </div>
 
 
+
+
 ## 📚 Overview
 
-
+- [📚 Overview](#-overview)
 - [⚡ News](#-news)
-- [🚧 TODO](#-todo)
 - [📖 Introduction](#-introduction)
 - [🍭 Results](#-results)
-- [🏝️ Reasoning Example](#-reasoning-example)
 - [✨ Getting Started](#-getting-started)
 - [🎁 Evaluation](#-evaluation)
-- [🖥️ Inference](#-inference)
-- [📄 Citation](#-Citation)
+- [🖥️ Inference](#️-inference)
+- [🏝️ Reasoning Example](#-reasoning-example)
+- [📄Citation](#citation)
+
+
 
 
 ## ⚡ News
