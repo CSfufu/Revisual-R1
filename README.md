@@ -25,6 +25,7 @@
 - [📖 Introduction](#-introduction)
 - [🍭 Results](#-results)
 - [🎯 Models](#-models)
+- [🧮 Datasets](#-datasets)
 - [✨ Getting Started](#-getting-started)
 - [🎁 Evaluation](#-evaluation)
 - [🖥️ Inference](#️-inference)
@@ -75,6 +76,12 @@ This work underscores that careful curriculum design and algorithmic enhancement
 | Revisual-R1-Coldstart | https://huggingface.co/csfufu/Revisual-R1-Coldstart |  Qwen2.5-VL-7B-Instruct |
 | Revisual-R1-final | https://huggingface.co/csfufu/Revisual-R1-final | Qwen2.5-VL-7B-Instruct |
 
+
+## 🧮 Datasets
+
+<img src="./figures/dataset.png" alt="Revisual results" >
+
+We will open source the **GRAMMAR** dataset within the next two weeks, which includes high-quality datasets for coldstart, MRL, and TRL. Stay tuned!
 
 ## ✨ Getting Started
 
@@ -226,9 +233,8 @@ Our **Revisual-R1** model reasoning case, showcasing its exceptional reasoning a
 
 We are preparing to complete these tasks over the next few weeks, please stay tuned!
 
-- 🚧 We are going to release the training datasets(Coldstart, MRL, TRL).
-- 🚧 We are going to release the checkpoint.
-- 🚧 We are in the process of training for 32B & 3B Revisual-R1 and will release them when we finish.\
+- 🚧 We are going to release the training datasets(Coldstart).
+- 🚧 We are in the process of training for 32B & 3B Revisual-R1 and will release them when we finish.
 
 ## 📮 Contact
 
