@@ -247,14 +247,11 @@ For questions, feedback, or collaboration opportunities, feel free to reach out:
 
 If you find our works useful for your research, please consider citing:
 ```
-@misc{chen2025advancingmultimodalreasoningoptimized,
-      title={Advancing Multimodal Reasoning: From Optimized Cold Start to Staged Reinforcement Learning}, 
-      author={Shuang Chen and Yue Guo and Zhaochen Su and Yafu Li and Yulun Wu and Jiacheng Chen and Jiayu Chen and Weijie Wang and Xiaoye Qu and Yu Cheng},
-      year={2025},
-      eprint={2506.04207},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2506.04207}, 
+@article{chen2025advancing,
+  title={Advancing Multimodal Reasoning: From Optimized Cold Start to Staged Reinforcement Learning},
+  author={Chen, Shuang and Guo, Yue and Su, Zhaochen and Li, Yafu and Wu, Yulun and Chen, Jiacheng and Chen, Jiayu and Wang, Weijie and Qu, Xiaoye and Cheng, Yu},
+  journal={arXiv preprint arXiv:2506.04207},
+  year={2025}
 }
 ```
 
