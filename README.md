@@ -91,7 +91,7 @@ We will open source the **GRAMMAR** dataset within the next two weeks, which inc
 
 You can install Revisual-R1 dependencies by running the following commands:
 ```bash
-conda create -n revisual python=3.11 -y && conda activate revisual
+conda create -n revisual python=3.10 -y && conda activate revisual
 
 cd Revisual-R1
 pip3 install -e .
