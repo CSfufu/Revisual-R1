@@ -3,11 +3,28 @@ import re
 import os
 import math
 import base64
-import shutil
+from typing import Optional
 
 from utils.model_wrapper import (
     ModelWrapper
 )
+
+
+
+
+def build_extract_prompt(prediction, question):
+    task_description = """
+Please read the following example.
+Then output the answer extracted from the model response directly. No "Extracted answer:" in your answer.\n
+"""
+    prompt = task_description
+    examples = get_gpt4_ICE()
+    for example in examples:
+        prompt += example + '\n'
+    prompt += question + '\n'
+    prompt += 'Model respone: ' + prediction
+    prompt += 'Extracted answer:'
+    return prompt
 
 
 def extract_boxed_answer(text):
@@ -22,34 +39,13 @@ def extract_boxed_answer(text):
     return text, False
 
 
-def get_cache_file_path(cache_dir: str, model_name: str, task) -> str:
-    folder = os.path.abspath(os.path.join(cache_dir, f'{model_name}___{task["dataset"]}'))
-    return os.path.join(folder, f'index___{task["_index"]:06d}.txt')
-
-
 def generate_prediction(model: ModelWrapper, task, args) -> str:
     """Generate a prediction for a given task"""
     # print('generate_prediction', task['id'])
 
-    if args.cache_dir is not None:
-        cache_file = get_cache_file_path(args.cache_dir, model.model_name, task)
-        if not os.path.exists(os.path.dirname(cache_file)):
-            os.makedirs(os.path.dirname(cache_file), exist_ok=True)
-        if os.path.exists(cache_file):
-            try:
-                with open(cache_file, 'r', encoding='utf-8') as f:
-                    response = f.read()
-                    if len(response) > 0:
-                        print('generate_prediction', task['_index'], task['id'], 'cache hit')
-                        return response
-                    else:
-                        pass  # need to generate again
-            except Exception as e:
-                print(f'Error reading cache file {cache_file}: {e}')
-
     buffer = io.BytesIO()
     image = task['image'][0]
-    print(f'<image ({image.width}x{image.height})>')
+    # print(f'<image ({image.width}x{image.height})>')
     if (image.width * image.height) > args.max_pixels:
         resize_factor = math.sqrt(args.max_pixels / (image.width * image.height))
         width, height = int(image.width * resize_factor), int(image.height * resize_factor)
@@ -83,43 +79,50 @@ def generate_prediction(model: ModelWrapper, task, args) -> str:
         }
     ]
 
-    print('generate_prediction', task['_index'], task['id'])
-    response = None
-    retries = 0
-    max_retries = args.max_retries
-    while retries <= max_retries:
-        try:
-            response = model.generate(messages)
-            assert len(response) > 0, 'response is empty'
-            break
-        except Exception as e:
-            if retries < max_retries:
-                retries += 1
-                print(f'Error generating prediction {task["id"]}, retrying ({retries}/{max_retries}): {e}')
-                continue
-            else:
-                raise RuntimeError(f'Error generating prediction {task["id"]}: {e}')
-
-    if args.cache_dir is not None:
-        cache_file = get_cache_file_path(args.cache_dir, model.model_name, task)
-        with open(cache_file, 'w+', encoding='utf-8') as f:
-            f.write(response)
-            f.close()
-
-    return response
+    return model.generate(messages)
 
 
-def evaluate_prediction(prediction, task, args) -> float:
+def evaluate_prediction(prediction, task, args, model: Optional[ModelWrapper] = None) -> float:
+    def parse_options(x): return ''.join(sorted(list(x.strip().lower().replace(',', '').replace(' ', ''))))
+    def parse_alphas(x): return ''.join(filter(lambda c: c.isalpha(), list(x)))
+
+    def parse_answer(x):
+        extracted, is_boxed = extract_boxed_answer(x)
+        # print('extracted', extracted, is_boxed, '=>', parse_alphas(extracted))
+        return parse_alphas(extracted)
+
     prediction_answer, is_boxed = extract_boxed_answer(prediction)
-    # assert is_boxed, 'prediction is not a boxed answer'
+    if is_boxed:
+        # print('evaluate_prediction', task['id'], f'{prediction_answer}[{parse_answer(prediction_answer)}] | {task['answer']}[{parse_answer(task['answer'])}]')
+        if parse_options(prediction_answer) == parse_options(task['answer']):
+            return 1.0
 
-    answer = task['answer']
-
-    def parse_answer(x): return ''.join(sorted(list(x.strip().lower().replace(',', '').replace(' ', ''))))
-
-    # print('evaluate_prediction', task['id'], f'{prediction_answer}[{parse_answer(prediction_answer)}] | {answer}[{parse_answer(answer)}]')
-
-    if parse_answer(prediction_answer) == parse_answer(answer):
-        return 1.0
-    else:
+    # use llm to judge
+    if model is None:
         return 0.0
+
+    prompt = build_extract_prompt(prediction, task['question'])
+    messages = [
+        {
+            "role": "system",
+            "content": args.system_prompt,
+        },
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": prompt,
+                },
+            ],
+        }
+    ]
+
+    extracted_answer = model.generate(messages)
+    extracted_answer = re.sub(r'<think>.*?</think>', '', extracted_answer, flags=re.DOTALL)
+
+    # print('llm extract:', parse_answer(extracted_answer), parse_answer(task['answer']))
+    if parse_answer(extracted_answer) == parse_answer(task['answer']):
+        return 1.0
+
+    return 0.0

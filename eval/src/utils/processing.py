@@ -1,10 +1,11 @@
 import os
 import math
 from PIL import Image
-from typing import List, Dict, Tuple
-from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
+from typing import List, Dict, Tuple, Optional
+from concurrent.futures import ThreadPoolExecutor
 
+from utils.model_wrapper import ModelWrapper
 from utils.model_parser import (
     generate_prediction,
     evaluate_prediction
@@ -22,7 +23,7 @@ def slice_dataset(dataset, start, end):
     return result
 
 
-def process_generation(model, tasks, args) -> List[str]:
+def process_generation(model:ModelWrapper, tasks, args) -> List[str]:
     predictions = []
     with ThreadPoolExecutor(max_workers=args.eval_threads) as executor:
         futures = []
@@ -48,7 +49,7 @@ def process_generation(model, tasks, args) -> List[str]:
     return predictions
 
 
-def process_evaluation(predictions, tasks, args) -> List[dict]:
+def process_evaluation(predictions: List[str], tasks, model: ModelWrapper, args) -> List[dict]:
     results = []
     with ThreadPoolExecutor(max_workers=args.eval_threads) as executor:
         futures = []
@@ -60,7 +61,8 @@ def process_evaluation(predictions, tasks, args) -> List[dict]:
                 evaluate_prediction,
                 prediction,
                 task,
-                args
+                args,
+                model,
             )
             futures.append((future, i, prediction, task))
 

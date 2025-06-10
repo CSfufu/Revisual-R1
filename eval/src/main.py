@@ -3,13 +3,15 @@ import json
 import argparse
 from utils.model_wrapper import OpenAIWrapper
 from utils.data_loaders import (
-    load_fufu_hard1_dataset
+    load_fufu_hard1_dataset,
+    load_mathverse_dataset,
+    load_mathvision_dataset,
 )
 from utils.processing import (
     slice_dataset,
     process_generation,
     process_evaluation,
-    calculate_metrics
+    calculate_metrics,
 )
 
 
@@ -47,7 +49,9 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
 
     datasets_to_eval = args.datasets.split(",") if args.datasets != "all" else [
-        "fufu_hard1"
+        # "fufu_hard1",
+        "mathverse",
+        "mathvision",
     ]
 
     all_samples = {}
@@ -55,6 +59,10 @@ def main():
     for dataset_name in datasets_to_eval:
         if dataset_name == "fufu_hard1":
             all_samples["fufu_hard1"] = load_fufu_hard1_dataset(args.dataset_dir)
+        if dataset_name == "mathverse":
+            all_samples["mathverse"] = load_mathverse_dataset(args.dataset_dir)
+        if dataset_name == "mathvision":
+            all_samples["mathvision"] = load_mathvision_dataset(args.dataset_dir)
 
     if not all_samples:
         print("No datasets loaded. Please check the paths and dataset names.")
@@ -66,7 +74,10 @@ def main():
         args.openai_base_url,
         args.max_tokens,
         args.temperature,
-        args.top_p)
+        args.top_p,
+        cache_dir=args.cache_dir,
+        max_retries=args.max_retries,
+    )
 
     # Process in batches
     all_results = {}
@@ -76,7 +87,7 @@ def main():
     for dataset_name, samples in all_samples.items():
         predictions = process_generation(model, samples, args)
 
-        results = process_evaluation(predictions, samples, args)
+        results = process_evaluation(predictions, samples, model, args)
 
         metrics = calculate_metrics(results)
 
