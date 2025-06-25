@@ -84,7 +84,12 @@ This work underscores that careful curriculum design and algorithmic enhancement
 
 <img src="./figures/dataset.png" alt="Revisual results" >
 
-We will open source the **GRAMMAR** dataset within the next two weeks, which includes high-quality datasets for coldstart, MRL, and TRL. Stay tuned!
+We will open source the **GRAMMAR** dataset within the next two weeks, which includes high-quality datasets for coldstart. Stay tuned!
+| **Datasets**                          | **Huggingface** |  **Size of the data volume** |
+|-----------------------------------|------------------|------------------|
+| MMRL | https://huggingface.co/datasets/csfufu/mmrl |  30.9K |
+| TextRL | https://huggingface.co/datasets/csfufu/textrl | 32.5K |
+
 
 ## ✨ Getting Started
 
