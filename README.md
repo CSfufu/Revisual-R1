@@ -43,6 +43,7 @@
 
 ## ⚡ News
 
+- [2025/10/13] 😋 We open-source another multimodal reasoning paper [ARES](https://arxiv.org/abs/2510.08457) foucusing on adaptive reasoning domain. We also open-source the **ARES-Adaptive-SFT-223k** [datasets](https://huggingface.co/collections/ares0728/ares-68e7c7160dcb48734dee4e95) and [code](https://github.com/shawn0728/ARES) we used. Take a look!
 - [2025/06/06] 🔥 Revisual-R1 model (Coldstart & final) are opensource on [huggingface](https://huggingface.co/collections/csfufu/revisual-r1-6841b748f08ee6780720c00e).
 - [2025/06/05] 🎉 Ranked #2 of the day on [Huggingface Daily Papers](https://huggingface.co/papers/2506.04207).
 - [2025/06/05] 🔥 Revisual-R1 paper available on [arxiv](https://arxiv.org/abs/2506.04207).
