@@ -261,6 +261,14 @@ If you find our works useful for your research, please consider citing:
   journal={arXiv preprint arXiv:2506.04207},
   year={2025}
 }
+
+
+@article{chen2025ares,
+  title={ARES: Multimodal Adaptive Reasoning via Difficulty-Aware Token-Level Entropy Shaping},
+  author={Chen, Shuang and Guo, Yue and Ye, Yimeng and Huang, Shijue and Hu, Wenbo and Li, Haoxi and Zhang, Manyuan and Chen, Jiayu and Guo, Song and Peng, Nanyun},
+  journal={arXiv preprint arXiv:2510.08457},
+  year={2025}
+}
 ```
 
 ## ⭐️ Star HistoryMore actions
